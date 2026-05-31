@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colombia Decide 2026 — Panel Electoral</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --navy:#0f1923;--navy2:#1a2738;--navy3:#243347;
+  --cream:#f5f0e8;--gold:#c9973a;--gold2:#e8b84b;
+  --red:#c0392b;--red-l:#e74c3c;
+  --blue:#2980b9;--blue-l:#3498db;
+  --teal:#16a085;--teal-l:#1abc9c;
+  --orange:#e67e22;--gray:#7f8c8d;--gray-l:#bdc3c7;
+  --white:#ffffff;--text:#ecf0f1;--text2:#bdc3c7;--text3:#7f8c8d;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
+  --r:6px;--r2:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--text);font-size:14px;line-height:1.65;min-height:100vh;}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(15,25,35,0.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--border2);padding:0 1.5rem;display:flex;align-items:center;height:52px;gap:0;}
+.nav-brand{font-family:'Playfair Display',serif;font-size:14px;color:var(--gold);margin-right:1.5rem;white-space:nowrap;flex-shrink:0;}
+.nav-links{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-link{font-size:11px;font-weight:500;letter-spacing:.04em;color:var(--text2);text-decoration:none;padding:0 12px;height:52px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;}
+.nav-link:hover,.nav-link.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+.hero{background:linear-gradient(155deg,var(--navy2) 0%,var(--navy) 65%);border-bottom:1px solid var(--border2);padding:3rem 2rem 2.5rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(201,151,58,.1) 0%,transparent 70%);pointer-events:none;}
+.hero-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;}
+.hero-title{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;line-height:1.15;color:var(--white);margin-bottom:.75rem;}
+.hero-title em{color:var(--gold);font-style:italic;}
+.hero-sub{font-size:13px;color:var(--text2);max-width:640px;margin-bottom:1.5rem;}
+.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text3);}
+.hero-meta span{display:flex;align-items:center;gap:6px;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+.dot.red{background:var(--red-l);}.dot.teal{background:var(--teal);}
+
+.metrics-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0;border-bottom:1px solid var(--border2);}
+.metric-item{padding:1.1rem 1.3rem;border-right:1px solid var(--border2);}
+.metric-item:last-child{border-right:none;}
+.metric-val{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:500;color:var(--gold);line-height:1.1;margin-bottom:2px;}
+.metric-lbl{font-size:11px;color:var(--text2);}
+.metric-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+
+.wrap{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+.section{margin-bottom:3rem;}
+.section-hdr{display:flex;align-items:baseline;gap:12px;margin-bottom:1.25rem;padding-bottom:10px;border-bottom:1px solid var(--border2);}
+.section-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.06em;}
+.section-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--white);}
+
+.card{background:var(--navy2);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem 1.3rem;}
+.card-title{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.grid21{display:grid;grid-template-columns:1.5fr 1fr;gap:12px;}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center;}
+.filter-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.06em;margin-right:4px;}
+.fBtn{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 13px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;}
+.fBtn:hover{border-color:var(--gold2);color:var(--gold2);}
+.fBtn.active{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:600;}
+
+/* ELECTION DETAIL */
+.elec-year{font-family:'Playfair Display',serif;font-size:44px;color:var(--gold);line-height:1;margin-bottom:4px;}
+.elec-winner{font-size:17px;color:var(--white);font-weight:500;}
+.elec-party{font-size:11px;color:var(--text2);margin-top:2px;}
+.elec-desc{font-size:13px;color:var(--text2);line-height:1.75;margin:1rem 0;}
+.elec-stats{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:.9rem;}
+.stat-pill{background:var(--navy3);border:1px solid var(--border2);border-radius:20px;padding:3px 11px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);}
+.stat-pill strong{color:var(--gold);}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;margin-left:6px;}
+.badge-2v{background:rgba(201,151,58,.15);color:var(--gold);}
+.badge-1v{background:rgba(22,160,133,.15);color:var(--teal-l);}
+.results-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.results-table th{text-align:left;padding:6px 8px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border2);}
+.results-table td{padding:7px 8px;border-bottom:1px solid var(--border);}
+.results-table tr:last-child td{border-bottom:none;}
+.bar-inline{height:4px;background:var(--navy3);border-radius:2px;margin-top:4px;position:relative;}
+.bar-inner{height:100%;border-radius:2px;position:absolute;left:0;top:0;}
+
+/* CANDIDATE CARDS */
+.cand-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;}
+.cand-card{background:var(--navy2);border:1px solid var(--border);border-radius:var(--r2);padding:1.1rem 1.2rem;transition:border-color .15s;}
+.cand-card:hover{border-color:var(--border2);}
+.cand-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-bottom:.7rem;}
+.cand-name{font-size:14px;font-weight:600;color:var(--white);margin-bottom:1px;}
+.cand-sub{font-size:11px;color:var(--text3);margin-bottom:8px;}
+.cand-pct{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;margin-bottom:4px;}
+.cand-track{height:5px;background:var(--navy3);border-radius:3px;overflow:hidden;margin-bottom:9px;}
+.cand-fill{height:100%;border-radius:3px;}
+.cand-tag{font-size:10px;display:inline-block;padding:2px 8px;border-radius:10px;font-weight:600;margin-bottom:8px;}
+.prop-section{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.prop-section-title{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.prop-item{font-size:11px;color:var(--text2);line-height:1.6;padding:5px 0;border-bottom:1px solid var(--border);}
+.prop-item:last-child{border-bottom:none;}
+.prop-item strong{color:var(--white);}
+
+/* PROGRAMAS GRID */
+.tab-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
+.tab-btn{font-size:11px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:all .15s;}
+.tab-btn:hover{border-color:var(--gold2);color:var(--gold2);}
+.tab-btn.active{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:600;}
+.prog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px;}
+.prog-cell{border-radius:var(--r);padding:11px 12px;font-size:11px;line-height:1.6;}
+.prog-cell-hdr{font-size:11px;font-weight:700;margin-bottom:6px;}
+.prog-cell ul{padding-left:14px;}
+.prog-cell li{margin-bottom:3px;}
+
+/* BALANCE */
+.bal-row{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:flex-start;line-height:1.6;}
+.bal-row:last-child{border-bottom:none;}
+.bal-icon{font-size:13px;flex-shrink:0;margin-top:2px;line-height:1;}
+.bal-title{font-weight:600;color:var(--white);}
+.bal-body{color:var(--text2);margin-top:1px;}
+
+/* RISK */
+.risk-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.risk-row:last-child{border-bottom:none;}
+.bdg{font-size:10px;padding:2px 9px;border-radius:10px;font-weight:600;white-space:nowrap;}
+.bdg-r{background:rgba(192,57,43,.2);color:#e74c3c;}
+.bdg-o{background:rgba(230,126,34,.2);color:#f39c12;}
+
+/* CONGRESS */
+.congress-bar{display:flex;height:26px;border-radius:var(--r);overflow:hidden;margin-bottom:9px;}
+.congress-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,.9);}
+.congress-legend{display:flex;flex-wrap:wrap;gap:7px;font-size:11px;}
+.leg-item{display:flex;align-items:center;gap:4px;color:var(--text2);}
+.leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+
+/* SOURCES */
+.src-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;}
+.src-link{display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);text-decoration:none;color:var(--text);transition:border-color .15s,background .15s;}
+.src-link:hover{border-color:var(--gold);background:var(--navy2);}
+.src-icon{font-size:17px;flex-shrink:0;color:var(--gold);}
+.src-name{font-size:12px;font-weight:500;}
+.src-sub{font-size:10px;color:var(--text3);}
+
+.alert{background:rgba(201,151,58,.1);border:1px solid rgba(201,151,58,.3);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--gold2);margin-bottom:1rem;display:flex;gap:8px;align-items:flex-start;}
+.note-box{background:var(--navy3);border-radius:var(--r);padding:10px 13px;font-size:12px;color:var(--text2);margin-top:10px;}
+.note-box strong{color:var(--gold);}
+
+.chart-wrap{position:relative;width:100%;}
+
+/* ANTIOQUIA SECTION */
+.antioq-card{background:var(--navy2);border:1px solid var(--border);border-radius:var(--r2);padding:1.1rem 1.2rem;margin-bottom:10px;}
+.antioq-cand{font-size:12px;font-weight:700;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:7px;}
+.antioq-item{font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid var(--border);line-height:1.6;}
+.antioq-item:last-child{border-bottom:none;}
+.antioq-item strong{color:var(--white);}
+
+@media(max-width:700px){
+  .grid2,.grid21,.grid3{grid-template-columns:1fr;}
+  .prog-grid{grid-template-columns:1fr 1fr;}
+  .cand-grid{grid-template-columns:1fr;}
+  .hero-title{font-size:24px;}
+  .metrics-strip{grid-template-columns:1fr 1fr;}
+  .metric-item{border-right:none;border-bottom:1px solid var(--border2);}
+  nav{padding:0 1rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Colombia Decide 2026</div>
+  <div class="nav-links">
+    <a class="nav-link active" href="#hoy">Hoy</a>
+    <a class="nav-link" href="#encuestas">Encuestas</a>
+    <a class="nav-link" href="#candidatos">Candidatos</a>
+    <a class="nav-link" href="#programas">Programas</a>
+    <a class="nav-link" href="#antioquia">Antioquia</a>
+    <a class="nav-link" href="#historico">Histórico</a>
+    <a class="nav-link" href="#balance">Balance Petro</a>
+    <a class="nav-link" href="#congreso">Congreso</a>
+    <a class="nav-link" href="#riesgo">Riesgo electoral</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Primera vuelta · 31 mayo 2026</div>
+  <h1 class="hero-title">Colombia <em>decide</em><br>su próximo presidente</h1>
+  <p class="hero-sub">Panel de análisis electoral multidimensional: encuestas, programas de gobierno, serie histórica 2006–2022, balance Petro y riesgos electorales en Antioquia. Fuentes: Registraduría, Silla Vacía, MOE, NotebookLM.</p>
+  <div class="hero-meta">
+    <span><div class="dot"></div>41,3 M habilitados</span>
+    <span><div class="dot teal"></div>11 candidatos</span>
+    <span><div class="dot red"></div>2ª vuelta: 28 junio</span>
+    <span><div class="dot"></div>Panel: CPOP EAFIT · N. Molina-Arroyave</span>
+  </div>
+</div>
+
+<div class="metrics-strip">
+  <div class="metric-item"><div class="metric-val">41,3 M</div><div class="metric-lbl">Censo nacional</div><div class="metric-sub">habilitados</div></div>
+  <div class="metric-item"><div class="metric-val">5,1 M</div><div class="metric-lbl">Censo Antioquia</div><div class="metric-sub">15.510 mesas</div></div>
+  <div class="metric-item"><div class="metric-val">44,6%</div><div class="metric-lbl">Cepeda — Invamer</div><div class="metric-sub">ponderador may. 2026</div></div>
+  <div class="metric-item"><div class="metric-val">54,9%</div><div class="metric-lbl">Participación 2022</div><div class="metric-sub">máximo histórico</div></div>
+  <div class="metric-item"><div class="metric-val">9,9%</div><div class="metric-lbl">Pobreza multidim.</div><div class="metric-sub">mínimo 25 años</div></div>
+  <div class="metric-item"><div class="metric-val">6,4%</div><div class="metric-lbl">Déficit fiscal Petro</div><div class="metric-sub">del PIB al cierre</div></div>
+  <div class="metric-item"><div class="metric-val">50</div><div class="metric-lbl">Municipios en riesgo</div><div class="metric-sub">Antioquia · MOE</div></div>
+</div>
+
+<div class="wrap">
+
+<!-- 01 HOY -->
+<section class="section" id="hoy">
+  <div class="section-hdr"><span class="section-num">01</span><h2 class="section-title">La elección de hoy</h2></div>
+  <div class="alert">⚡ Jornada electoral en curso — resultados oficiales desde las 6:00 p.m. en la Registraduría Nacional · <a href="https://registraduria.gov.co" target="_blank" style="color:var(--gold2);text-decoration:underline;">registraduria.gov.co</a></div>
+  <div class="grid21">
+    <div class="card">
+      <div class="card-title">Contexto de la elección 2026</div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:.9rem;">
+        Colombia vota hoy en una elección polarizada entre <strong style="color:var(--white);">continuidad y cambio</strong>. Es la primera vez en la historia moderna que un candidato de izquierda busca transferirle el poder a otro del mismo espectro. Los ejes estructurantes son la <em>violencia armada</em>, el <em>manejo fiscal</em> y el fracaso parcial de la Paz Total, que alimentan el voto de rechazo hacia la oposición.
+      </p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:.9rem;">
+        Con 11 candidatos tras el retiro de tres fórmulas (Murillo y Caicedo se sumaron a Cepeda), la disputa central es quién acompaña a Iván Cepeda a segunda vuelta: De la Espriella creció 6 puntos en los últimos 11 días, mientras Valencia sostuvo la narrativa de "única que gana en segunda vuelta", cuestionada por el ponderador de la Silla Vacía.
+      </p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.75;">Segunda vuelta: <strong style="color:var(--gold);">28 de junio de 2026</strong>. Ningún candidato alcanzará 50%+1 en primera vuelta según todos los escenarios disponibles.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Claves de la jornada</div>
+      <div style="display:flex;flex-direction:column;gap:9px;">
+        <div style="padding:9px 11px;background:var(--navy3);border-radius:var(--r);font-size:12px;"><div style="color:var(--gold);font-weight:600;margin-bottom:2px;">Pregunta central</div><div style="color:var(--text2);">¿Quién acompaña a Cepeda a segunda vuelta: De la Espriella o Valencia?</div></div>
+        <div style="padding:9px 11px;background:var(--navy3);border-radius:var(--r);font-size:12px;"><div style="color:var(--gold);font-weight:600;margin-bottom:2px;">Ventaja de Cepeda</div><div style="color:var(--text2);">Sostenida en todas las encuestas. Favorito en escenario A (vs. Abelardo). Vulnerable en escenario B (vs. Valencia según Génesis Crea).</div></div>
+        <div style="padding:9px 11px;background:var(--navy3);border-radius:var(--r);font-size:12px;"><div style="color:var(--gold);font-weight:600;margin-bottom:2px;">Sorpresa posible</div><div style="color:var(--text2);">Voto oculto para De la Espriella en Costa Caribe y Antioquia. Patrón "Hernández 2022" no capturado en encuestas telefónicas.</div></div>
+        <div style="padding:9px 11px;background:var(--navy3);border-radius:var(--r);font-size:12px;"><div style="color:var(--gold);font-weight:600;margin-bottom:2px;">Participación esperada</div><div style="color:var(--text2);">Proyecciones apuntan a cifra cercana o superior al 54,9% de 2022 por alta polarización e interés creciente.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 ENCUESTAS -->
+<section class="section" id="encuestas">
+  <div class="section-hdr"><span class="section-num">02</span><h2 class="section-title">Ponderador de encuestas — mayo 2026</h2></div>
+  <div class="grid2" style="margin-bottom:12px;">
+    <div class="card">
+      <div class="card-title">Comparativo por encuestadora</div>
+      <div class="chart-wrap" style="height:205px;"><canvas id="cEnc" role="img" aria-label="Encuestas presidenciales Colombia 2026"></canvas></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:9px;font-size:11px;color:var(--text2);">
+        <span style="display:flex;align-items:center;gap:3px;"><span style="width:9px;height:9px;border-radius:2px;background:#3498db;display:inline-block;"></span>Cepeda</span>
+        <span style="display:flex;align-items:center;gap:3px;"><span style="width:9px;height:9px;border-radius:2px;background:#e67e22;display:inline-block;"></span>De la Espriella</span>
+        <span style="display:flex;align-items:center;gap:3px;"><span style="width:9px;height:9px;border-radius:2px;background:#c0392b;display:inline-block;"></span>Valencia</span>
+        <span style="display:flex;align-items:center;gap:3px;"><span style="width:9px;height:9px;border-radius:2px;background:#16a085;display:inline-block;"></span>Fajardo</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Escenarios de segunda vuelta</div>
+      <div class="chart-wrap" style="height:205px;"><canvas id="cSV" role="img" aria-label="Escenarios segunda vuelta Colombia 2026"></canvas></div>
+      <div class="note-box" style="margin-top:8px;">Escenario A (Cepeda–Abelardo): Cepeda 45% · Abelardo 42% · Silla Vacía. Escenario B (Cepeda–Valencia): Valencia 48,3% · Cepeda 45,6% · Génesis Crea. <strong>El escenario B es el más disputado y el único donde Cepeda podría perder.</strong></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Tendencia de intención de voto — ene–may 2026</div>
+    <div class="chart-wrap" style="height:190px;"><canvas id="cTend" role="img" aria-label="Tendencia intención de voto Colombia 2026"></canvas></div>
+    <div style="font-size:10px;color:var(--text3);margin-top:7px;">Fuentes: Invamer, CNC/CAMBIO, Guarumo-EcoAnalítica, Génesis Crea, Atlas Intel · Ponderador: Silla Vacía</div>
+  </div>
+</section>
+
+<!-- 03 CANDIDATOS -->
+<section class="section" id="candidatos">
+  <div class="section-hdr"><span class="section-num">03</span><h2 class="section-title">Los candidatos punteros — perfiles y propuestas</h2></div>
+
+  <div class="filter-bar">
+    <span class="filter-label">VER:</span>
+    <button class="fBtn active" onclick="filterCand('todos')">Todos</button>
+    <button class="fBtn" onclick="filterCand('seguridad')">Seguridad</button>
+    <button class="fBtn" onclick="filterCand('economia')">Economía</button>
+    <button class="fBtn" onclick="filterCand('salud')">Salud</button>
+    <button class="fBtn" onclick="filterCand('educacion')">Educación</button>
+    <button class="fBtn" onclick="filterCand('estado')">Estado</button>
+    <button class="fBtn" onclick="filterCand('inclusion')">Inclusión</button>
+  </div>
+
+  <div class="cand-grid" id="candGrid">
+
+    <!-- CEPEDA -->
+    <div class="cand-card" data-cand="cepeda">
+      <div class="cand-avatar" style="background:rgba(52,152,219,.15);color:#3498db;">IC</div>
+      <div class="cand-name">Iván Cepeda Castro</div>
+      <div class="cand-sub">Pacto Histórico · Las Tres Revoluciones</div>
+      <div class="cand-pct" style="color:#3498db;">44,6%</div>
+      <div class="cand-track"><div class="cand-fill" style="width:44.6%;background:#3498db;"></div></div>
+      <span class="cand-tag" style="background:rgba(52,152,219,.15);color:#3498db;">Izquierda transformadora · 1.°</span>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">433 pp. · 113k palabras · Manifiesto político-movilizador</div>
+
+      <div class="prop-section" id="cepeda-todos">
+        <div class="prop-section-title" data-cat="seguridad">Seguridad</div>
+        <div class="prop-item" data-cat="seguridad"><strong>Paz como condición:</strong> Seguridad humana; atender causas sociales de la violencia. Empleo a jóvenes como mejor política de seguridad.</div>
+        <div class="prop-item" data-cat="seguridad"><strong>Anticorrupción:</strong> Sistema Nacional contra la Macrocorrupción con instancia de juzgamiento especial. Fondo de Reparación de Víctimas con bienes incautados.</div>
+        <div class="prop-section-title" data-cat="economia" style="margin-top:8px;">Economía</div>
+        <div class="prop-item" data-cat="economia"><strong>Reforma tributaria progresiva.</strong> Control de rentas extractivas y soberanía energética. El Estado compra producción agropecuaria a precios justos.</div>
+        <div class="prop-item" data-cat="economia"><strong>Austeridad Republicana:</strong> reducción de salarios de altos funcionarios, incluyendo el presidente.</div>
+        <div class="prop-section-title" data-cat="salud" style="margin-top:8px;">Salud</div>
+        <div class="prop-item" data-cat="salud"><strong>Salud como derecho fundamental</strong> (sin modelo de negocio de la Ley 100). Medicina preventiva, atención domiciliaria y salud mental como ejes.</div>
+        <div class="prop-item" data-cat="salud"><strong>SISPI:</strong> Fortalecer el sistema indígena intercultural reconociendo medicina tradicional y autonomía administrativa.</div>
+        <div class="prop-section-title" data-cat="estado" style="margin-top:8px;">Estado y reforma política</div>
+        <div class="prop-item" data-cat="estado"><strong>Revolución Política:</strong> "Mandar obedeciendo". Reforma Ley 80 para que comunidades y JAC contraten directamente con el Estado.</div>
+        <div class="prop-item" data-cat="estado"><strong>Revolución Agraria:</strong> Redistribución de 1 millón de hectáreas. Acceso al agua potable como eje central.</div>
+        <div class="prop-section-title" data-cat="inclusion" style="margin-top:8px;">Inclusión</div>
+        <div class="prop-item" data-cat="inclusion"><strong>Revolución antirracista y antipatriarcal.</strong> Inversión masiva en Pacífico: agua potable y educación superior para comunidades afrodescendientes.</div>
+        <div class="prop-item" data-cat="inclusion">Renta básica universal para pobreza extrema. Campesinado como sujeto constitucional de derechos.</div>
+      </div>
+    </div>
+
+    <!-- DE LA ESPRIELLA -->
+    <div class="cand-card" data-cand="espriella">
+      <div class="cand-avatar" style="background:rgba(230,126,34,.15);color:#e67e22;">DE</div>
+      <div class="cand-name">Abelardo De la Espriella</div>
+      <div class="cand-sub">Defensores de la Patria · Patria Milagro</div>
+      <div class="cand-pct" style="color:#e67e22;">30,9%</div>
+      <div class="cand-track"><div class="cand-fill" style="width:30.9%;background:#e67e22;"></div></div>
+      <span class="cand-tag" style="background:rgba(230,126,34,.15);color:#e67e22;">Derecha populista · 2.°</span>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">3 pp. · 3,4k palabras · Marco narrativo-moral</div>
+
+      <div class="prop-section">
+        <div class="prop-section-title" data-cat="seguridad">Seguridad</div>
+        <div class="prop-item" data-cat="seguridad"><strong>Cero negociación</strong> con criminales. Paz Total: "traición a la Patria". Destrucción de 330.000 ha de coca (fumigación, erradicación manual, extradición).</div>
+        <div class="prop-item" data-cat="seguridad"><strong>Bloque de Búsqueda contra la Corrupción</strong> dirigido por la Presidencia. Limpieza inmediata de Ecopetrol y entidades del Estado.</div>
+        <div class="prop-section-title" data-cat="economia" style="margin-top:8px;">Economía</div>
+        <div class="prop-item" data-cat="economia"><strong>Meta 7% de crecimiento</strong> (similar a Corea del Sur). Ajuste fiscal de $70 billones. Reducción del Estado en una cuarta parte. "Una entra y dos salen" de regulaciones.</div>
+        <div class="prop-item" data-cat="economia"><strong>"País de Propietarios":</strong> créditos de vivienda al 2%. Convertir la altillanura en el "Matto Grosso colombiano".</div>
+        <div class="prop-section-title" data-cat="salud" style="margin-top:8px;">Salud</div>
+        <div class="prop-item" data-cat="salud"><strong>Plan de choque $10 billones.</strong> Revisión trimestral de la UPC. Control de precios de medicamentos y dispositivos. Topes a costos de administración de EPS.</div>
+        <div class="prop-item" data-cat="salud"><strong>Salud animal:</strong> atención veterinaria gratuita o de bajo costo usando infraestructura hospitalaria existente.</div>
+        <div class="prop-section-title" data-cat="estado" style="margin-top:8px;">Estado y gobernanza</div>
+        <div class="prop-item" data-cat="estado"><strong>Superávit primario fiscal.</strong> Comité de regla fiscal para limitar exceso de gasto. Reducción de ministerios.</div>
+        <div class="prop-section-title" data-cat="educacion" style="margin-top:8px;">Educación</div>
+        <div class="prop-item" data-cat="educacion">Créditos universitarios blandos para mejores talentos. Bono "Pase mi cultura" para 2,4 millones de jóvenes.</div>
+        <div class="prop-section-title" data-cat="inclusion" style="margin-top:8px;">Inclusión</div>
+        <div class="prop-item" data-cat="inclusion"><strong>Escuela de Emprendedores Rurales</strong> para 100.000 jóvenes del campo en prácticas productivas eficientes.</div>
+      </div>
+    </div>
+
+    <!-- VALENCIA -->
+    <div class="cand-card" data-cand="valencia">
+      <div class="cand-avatar" style="background:rgba(192,57,43,.15);color:#c0392b;">PV</div>
+      <div class="cand-name">Paloma Valencia Laserna</div>
+      <div class="cand-sub">Centro Democrático · Colombia Más Grande</div>
+      <div class="cand-pct" style="color:#c0392b;">21,7%</div>
+      <div class="cand-track"><div class="cand-fill" style="width:21.7%;background:#c0392b;"></div></div>
+      <span class="cand-tag" style="background:rgba(192,57,43,.15);color:#c0392b;">Derecha liberal · 3.°</span>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">19 pp. · 6,7k palabras · Gramática gerencial</div>
+
+      <div class="prop-section">
+        <div class="prop-section-title" data-cat="seguridad">Seguridad</div>
+        <div class="prop-item" data-cat="seguridad"><strong>Plan 30-30:</strong> 30.000 militares + 30.000 policías nuevos. Gasto en defensa al 4% del PIB. Ciberinteligencia, drones de última generación. Cooperación tipo Plan Colombia.</div>
+        <div class="prop-section-title" data-cat="economia" style="margin-top:8px;">Economía</div>
+        <div class="prop-item" data-cat="economia"><strong>Meta 5% de crecimiento.</strong> Reducción impuesto renta empresarial. Eliminación impuesto al patrimonio. Inversión extranjera: $2.000 M anuales.</div>
+        <div class="prop-item" data-cat="economia"><strong>Energía:</strong> fracking, 1 millón de barriles/día. Exploración nuclear, hidrógeno y biomasa. La mayor tensión interna del programa.</div>
+        <div class="prop-section-title" data-cat="salud" style="margin-top:8px;">Salud</div>
+        <div class="prop-item" data-cat="salud"><strong>PMU 24/7</strong> en Presidencia. 10 millones de atenciones represadas en 100 días. $9 billones: $6B para deudas, $3B para medicamentos.</div>
+        <div class="prop-item" data-cat="salud"><strong>Hospitales Padrinos:</strong> especialistas de alta complejidad se trasladan al campo. Sistema mixto público-privado.</div>
+        <div class="prop-section-title" data-cat="educacion" style="margin-top:8px;">Educación</div>
+        <div class="prop-item" data-cat="educacion">Formación de <strong>1 millón de jóvenes en IA.</strong> ICETEX: pagos solo si el graduado tiene empleo. Ruta 3E: Estudiar, Emplearse o Emprender.</div>
+        <div class="prop-item" data-cat="educacion">Subsidio 30% del salario mínimo para primer empleo juvenil. Capital semilla de $500.000 por cada niño en pobreza.</div>
+        <div class="prop-section-title" data-cat="estado" style="margin-top:8px;">Estado</div>
+        <div class="prop-item" data-cat="estado"><strong>Estado AI First:</strong> IA para automatizar trámites. Congelar 30% de OPS. "Cédula del Hogar" para focalizar subsidios.</div>
+        <div class="prop-section-title" data-cat="inclusion" style="margin-top:8px;">Inclusión</div>
+        <div class="prop-item" data-cat="inclusion">Licencia de paternidad mínimo 4 semanas. Capital semilla de $500.000 por niño nacido en pobreza.</div>
+      </div>
+    </div>
+
+    <!-- FAJARDO -->
+    <div class="cand-card" data-cand="fajardo">
+      <div class="cand-avatar" style="background:rgba(22,160,133,.15);color:#16a085;">SF</div>
+      <div class="cand-name">Sergio Fajardo</div>
+      <div class="cand-sub">Dignidad y Compromiso · Cambio. Serio. Seguro.</div>
+      <div class="cand-pct" style="color:#16a085;">~5%</div>
+      <div class="cand-track"><div class="cand-fill" style="width:5%;background:#16a085;"></div></div>
+      <span class="cand-tag" style="background:rgba(22,160,133,.15);color:#16a085;">Centro tecnocrático · 4.°</span>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">62 pp. · 26k palabras · Densidad técnica</div>
+
+      <div class="prop-section">
+        <div class="prop-section-title" data-cat="seguridad">Seguridad</div>
+        <div class="prop-item" data-cat="seguridad"><strong>Plan Guardián:</strong> 40.000 policías nuevos. Ataque a rentas criminales. Prevención del reclutamiento juvenil. "Entornos Protectores" para alejar jóvenes de la violencia.</div>
+        <div class="prop-section-title" data-cat="economia" style="margin-top:8px;">Economía</div>
+        <div class="prop-item" data-cat="economia">Consolidación fiscal. DIAN moderna. Crédito productivo para 150.000 empresas. Fondo Nacional de Innovación y Emprendimiento Verde. Modernización de la caficultura.</div>
+        <div class="prop-section-title" data-cat="salud" style="margin-top:8px;">Salud</div>
+        <div class="prop-item" data-cat="salud"><strong>UPC con institucionalidad independiente.</strong> Acuerdo de Punto Final para saldar deudas con hospitales. Salud Digital con interoperabilidad de historias clínicas.</div>
+        <div class="prop-item" data-cat="salud"><strong>Salud Mental:</strong> estrategia nacional con rutas ágiles, énfasis en jóvenes y prevención del suicidio. SISPI: cobertura 50% en 4 años.</div>
+        <div class="prop-section-title" data-cat="educacion" style="margin-top:8px;">Educación</div>
+        <div class="prop-item" data-cat="educacion">Enfoque <strong>STEAM.</strong> SENA ampliado con 150.000 nuevos cupos. Instituto Nacional de Inteligencia Artificial. Registro Universal de Ingresos (RUI) para mejor asignación de subsidios.</div>
+        <div class="prop-section-title" data-cat="estado" style="margin-top:8px;">Estado</div>
+        <div class="prop-item" data-cat="estado"><strong>Jurisdicción Nacional Digital</strong> para descongestionar procesos judiciales. Selección de Fiscal y Procurador por convocatorias públicas y mérito.</div>
+        <div class="prop-section-title" data-cat="inclusion" style="margin-top:8px;">Inclusión</div>
+        <div class="prop-item" data-cat="inclusion">50% de empresas apoyadas por el Estado lideradas por mujeres. Economía Plateada para adultos mayores. Ruta nacional de salud mental escolar.</div>
+      </div>
+    </div>
+
+    <!-- CLAUDIA LÓPEZ -->
+    <div class="cand-card" data-cand="lopez">
+      <div class="cand-avatar" style="background:rgba(142,68,173,.15);color:#9b59b6;">CL</div>
+      <div class="cand-name">Claudia López</div>
+      <div class="cand-sub">Imparables · Una Nueva Historia</div>
+      <div class="cand-pct" style="color:#9b59b6;">~4%</div>
+      <div class="cand-track"><div class="cand-fill" style="width:4%;background:#9b59b6;"></div></div>
+      <span class="cand-tag" style="background:rgba(142,68,173,.15);color:#9b59b6;">Centro-izquierda · 5.°</span>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Exalcaldesa de Bogotá</div>
+
+      <div class="prop-section">
+        <div class="prop-section-title" data-cat="seguridad">Seguridad</div>
+        <div class="prop-item" data-cat="seguridad"><strong>Fiscalía Antimafia implacable.</strong> Reforma penitenciaria: INPEC como gendarmería carcelaria. Policías locales para Medellín.</div>
+        <div class="prop-section-title" data-cat="salud" style="margin-top:8px;">Salud</div>
+        <div class="prop-item" data-cat="salud"><strong>Sistema Nacional de Salud y Cuidado:</strong> integrar servicios médicos con cuidado preventivo en todo el ciclo vital. Estudio actuarial para actualizar plan de beneficios.</div>
+        <div class="prop-item" data-cat="salud">Sistema mixto con límites estrictos a integración vertical. Sistema de información unificado centrado en el paciente.</div>
+        <div class="prop-section-title" data-cat="educacion" style="margin-top:8px;">Educación</div>
+        <div class="prop-item" data-cat="educacion"><strong>"Todos a la U":</strong> 1 millón de becas de educación y trabajo para jóvenes, mujeres y mayores de 50. Microcréditos preferenciales para economía popular.</div>
+        <div class="prop-section-title" data-cat="estado" style="margin-top:8px;">Estado</div>
+        <div class="prop-item" data-cat="estado"><strong>"En el territorio, no en el escritorio."</strong> DNP transformado en Departamentos de Planeación Regional. Presupuestos Participativos con voto ciudadano por tecnología.</div>
+        <div class="prop-item" data-cat="estado">Conectividad: Túnel del Toyo, Regiotram Valle de Aburrá, Puerto Antioquia en clúster logístico.</div>
+        <div class="prop-section-title" data-cat="inclusion" style="margin-top:8px;">Inclusión</div>
+        <div class="prop-item" data-cat="inclusion"><strong>Sistema Nacional de Cuidado</strong> para liberar a mujeres del trabajo no remunerado. 1 millón de becas. Igualdad y no discriminación como regla absoluta.</div>
+      </div>
+    </div>
+
+  </div><!-- /cand-grid -->
+</section>
+
+<!-- 04 PROGRAMAS COMPARATIVO -->
+<section class="section" id="programas">
+  <div class="section-hdr"><span class="section-num">04</span><h2 class="section-title">Comparativo programático por eje</h2></div>
+  <div class="card">
+    <div class="tab-bar" id="tabBar">
+      <button class="tab-btn active" onclick="showTab('seguridad')">Seguridad</button>
+      <button class="tab-btn" onclick="showTab('economia')">Economía</button>
+      <button class="tab-btn" onclick="showTab('salud')">Salud</button>
+      <button class="tab-btn" onclick="showTab('energia')">Energía</button>
+      <button class="tab-btn" onclick="showTab('paz')">Paz y conflicto</button>
+      <button class="tab-btn" onclick="showTab('estado')">Estado</button>
+      <button class="tab-btn" onclick="showTab('inclusion')">Inclusión</button>
+    </div>
+    <div id="tabContent"></div>
+    <div style="margin-top:12px;">
+      <a class="src-link" href="https://propuestaspresidenciales2026.vercel.app/" target="_blank" style="display:inline-flex;">
+        <span class="src-icon">📊</span>
+        <div><div class="src-name">Análisis completo — LDA + Word Cloud</div><div class="src-sub">propuestaspresidenciales2026.vercel.app</div></div>
+      </a>
+    </div>
+    <div class="note-box">
+      <strong>Lo que comparten:</strong> Los cinco programas coinciden en el diagnóstico de crisis sistémica simultánea. La diferencia es el origen atribuido: ¿Estado fallido o mercado excluyente? Cepeda: léxico de movilización. Fajardo: arquitectura institucional. Valencia: gramática gerencial. De la Espriella: marco narrativo-moral. López: autonomía territorial como solución.
+    </div>
+  </div>
+</section>
+
+<!-- 05 ANTIOQUIA -->
+<section class="section" id="antioquia">
+  <div class="section-hdr"><span class="section-num">05</span><h2 class="section-title">Propuestas específicas para Antioquia</h2></div>
+  <div class="grid2">
+    <div>
+      <div class="antioq-card">
+        <div class="antioq-cand"><span style="color:#3498db;">●</span> Iván Cepeda</div>
+        <div class="antioq-item"><strong>"Medellín y Antioquia no regresarán al pasado"</strong> — discurso íntegro dedicado a la región.</div>
+        <div class="antioq-item"><strong>Justicia para víctimas de la Comuna 13:</strong> centralidad de las víctimas de la Operación Orión. Búsqueda de desaparecidos en La Escombrera (504 casos documentados).</div>
+        <div class="antioq-item"><strong>Urabá:</strong> solidaridad con damnificados por inundaciones. Fortalecer el movimiento sindical bananero de Apartadó.</div>
+        <div class="antioq-item"><strong>San José de Apartadó:</strong> hacer efectiva la decisión de la Corte IDH sobre la Comunidad de Paz.</div>
+        <div class="antioq-item"><strong>Diálogo empresarial:</strong> "Antioquia ya no pertenece a un solo sector político" — invitación a construir prosperidad compartida.</div>
+      </div>
+      <div class="antioq-card" style="margin-top:10px;">
+        <div class="antioq-cand"><span style="color:#16a085;">●</span> Sergio Fajardo</div>
+        <div class="antioq-item"><strong>Réplica CEDEZOs:</strong> escalar a todo el país el modelo de Centros de Desarrollo Empresarial Zonal de Medellín (asistencia técnica y financiera en barrios populares).</div>
+        <div class="antioq-item"><strong>Entornos Protectores:</strong> estrategia contra reclutamiento juvenil basada en modelos de intervención aplicados en Antioquia.</div>
+      </div>
+    </div>
+    <div>
+      <div class="antioq-card">
+        <div class="antioq-cand"><span style="color:#9b59b6;">●</span> Claudia López</div>
+        <div class="antioq-item"><strong>Túnel del Toyo:</strong> garantizar continuidad y estabilidad del proyecto y las vías que conectan Medellín con Urabá y Quibdó.</div>
+        <div class="antioq-item"><strong>Regiotram del Valle de Aburrá:</strong> compromiso con el sistema de transporte de pasajeros.</div>
+        <div class="antioq-item"><strong>Puerto Antioquia en Urabá:</strong> integrado en clúster logístico de transición energética junto con Cartagena y Barranquilla.</div>
+        <div class="antioq-item"><strong>Seguridad urbana en Medellín:</strong> policías locales y sistemas de convivencia específicos.</div>
+      </div>
+      <div class="antioq-card" style="margin-top:10px;">
+        <div class="antioq-cand"><span style="color:#c0392b;">●</span> Paloma Valencia</div>
+        <div class="antioq-item"><strong>Minería ilegal:</strong> formalización de la minería de oro con impacto directo en Nordeste y Bajo Cauca antioqueño.</div>
+        <div class="antioq-item">Sin proyectos de infraestructura específicos para Antioquia en los documentos disponibles.</div>
+      </div>
+      <div class="antioq-card" style="margin-top:10px;">
+        <div class="antioq-cand"><span style="color:#e67e22;">●</span> De la Espriella</div>
+        <div class="antioq-item"><strong>Seguridad en Bajo Cauca y Urabá:</strong> propuestas de seguridad fronteriza y lucha contra economías ilegales (coca) con impacto en estas subregiones.</div>
+        <div class="antioq-item">Sin proyectos de infraestructura específicos para el departamento en los documentos disponibles.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 HISTÓRICO -->
+<section class="section" id="historico">
+  <div class="section-hdr"><span class="section-num">06</span><h2 class="section-title">Serie histórica — 1ª vuelta 2006–2022</h2></div>
+
+  <div class="filter-bar" id="elecNav">
+    <span class="filter-label">AÑO:</span>
+    <button class="fBtn active" onclick="showElec('2006')">2006</button>
+    <button class="fBtn" onclick="showElec('2010')">2010</button>
+    <button class="fBtn" onclick="showElec('2014')">2014</button>
+    <button class="fBtn" onclick="showElec('2018')">2018</button>
+    <button class="fBtn" onclick="showElec('2022')">2022</button>
+  </div>
+
+  <div id="elec-detail-container"></div>
+
+  <div class="card" style="margin-top:12px;">
+    <div class="card-title">Vista comparativa — votos por candidato y año</div>
+    <div class="chart-wrap" style="height:265px;"><canvas id="cHist" role="img" aria-label="Resultados primera vuelta Colombia 2006-2022"></canvas></div>
+    <div style="display:flex;flex-wrap:wrap;gap:9px;margin-top:9px;font-size:11px;color:var(--text2);">
+      <span style="display:flex;align-items:center;gap:3px;"><span style="width:9px;height:9px;border-radius:2px;background:#3498db;display:inline-block;"></span>1.° ganador</span>
+      <span style="display:flex;align-items:center;gap:3px;"><span style="width:9px;height:9px;border-radius:2px;background:#e74c3c;display:inline-block;"></span>2.°</span>
+      <span style="display:flex;align-items:center;gap:3px;"><span style="width:9px;height:9px;border-radius:2px;background:#e67e22;display:inline-block;"></span>3.°</span>
+      <span style="display:flex;align-items:center;gap:3px;"><span style="width:9px;height:9px;border-radius:2px;background:#7f8c8d;display:inline-block;"></span>4.°/5.°</span>
+      <span style="display:flex;align-items:center;gap:3px;"><span style="border-top:2px dashed #c9973a;width:14px;display:inline-block;"></span>Umbral 50%</span>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:7px;">2006: Gaviria(Polo)·Serpa(Lib) | 2010: Mockus(Verde)·Vargas(CR)·Pardo(Lib) | 2014: Santos(LaU)·Ramírez(Cons)·López(Polo) | 2018: Petro(CH)·Fajardo(CE)·De la Calle(Lib) | 2022: Hernández(LGA)·Fico(EC)·Fajardo(CE)</div>
+  </div>
+
+  <div class="grid2" style="margin-top:12px;">
+    <div class="card">
+      <div class="card-title">% ganador — umbral 50%</div>
+      <div class="chart-wrap" style="height:180px;"><canvas id="cGan" role="img" aria-label="% ganador primera vuelta 2006-2022"></canvas></div>
+      <div style="font-size:10px;color:var(--text3);margin-top:6px;">Solo Uribe 2006 superó el 50% bajo la Constitución del 91. Todos los demás requirieron segunda vuelta.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Participación electoral — 1ª vuelta</div>
+      <div class="chart-wrap" style="height:180px;"><canvas id="cPart" role="img" aria-label="Participación primera vuelta 2006-2022"></canvas></div>
+      <div style="font-size:10px;color:var(--text3);margin-top:6px;">Mínimo 2014: 40% (60% abstención, debate paz/FARC). Remontada 2018-2022 por alta polarización.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 BALANCE PETRO -->
+<section class="section" id="balance">
+  <div class="section-hdr"><span class="section-num">07</span><h2 class="section-title">Balance Gobierno Petro 2022–2026</h2></div>
+  <div style="font-size:11px;color:var(--text3);margin-bottom:1rem;">Fuente: NotebookLM "The Petro Administration" (21 fuentes · 30 may 2026)</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title" style="color:#2ecc71;">Logros y reformas aprobadas</div>
+      <div class="bal-row"><div class="bal-icon" style="color:#2ecc71;">✓</div><div><div class="bal-title">Pobreza multidimensional: 9,9% — mínimo 25 años</div><div class="bal-body">Monetaria 36,6%→31,8%. Extrema 13,8%→11,7%. Desempleo promedio 8,9% (mínimo 3 décadas). Salario mínimo real +39% acumulado ($2.000.000 COP en 2026).</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#2ecc71;">✓</div><div><div class="bal-title">Reforma Pensional — Ley 2381/2024</div><div class="bal-body">Sistema 4 pilares. Beneficiarios: 1,7M → 3,1M. Cotización obligatoria en Colpensiones hasta 2,3 salarios mínimos. Aporte solidario para adultos mayores vulnerables.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#2ecc71;">✓</div><div><div class="bal-title">Reforma Laboral — Ley 2466/2025</div><div class="bal-body">Jornada nocturna desde las 7 p.m. Recargos dominicales al 100% en 2027. Formalización trabajadoras domésticas y plataformas digitales. Madres comunitarias como empleadas del Estado.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#2ecc71;">✓</div><div><div class="bal-title">Reforma tributaria progresiva + PND</div><div class="bal-body">Primer PND con consulta regional amplia. Presupuesto educación: 50→88 billones. Presupuesto salud: 48,5→73,5 billones. Pagó deuda con el FMI heredada.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#2ecc71;">✓</div><div><div class="bal-title">Transición energética y medio ambiente</div><div class="bal-body">Deforestación cayó 70%. Primera vez que energía solar supera generación por carbón. Exportaciones agropecuarias: récord $12.716 M USD (2025). 4,8 millones campesinos ocupados.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#2ecc71;">✓</div><div><div class="bal-title">Ley Jurisdicción Agraria + Reforma Agraria</div><div class="bal-body">Formalización 2M+ hectáreas. 446.766 ha en compras directas ANT. 10.000 Equipos Básicos de Salud en zonas rurales; 15 millones de beneficiarios.</div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:#e74c3c;">Errores graves y promesas incumplidas</div>
+      <div class="bal-row"><div class="bal-icon" style="color:#e74c3c;">✗</div><div><div class="bal-title">Paz Total: fracaso estratégico</div><div class="bal-body">Combatientes: 13.000 (2022) → 27.000 (2025). Grupos ilegales controlan 46% del territorio (518 municipios). Secuestros +336%, extorsión +46%. Negociaciones ELN paralizadas.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#e74c3c;">✗</div><div><div class="bal-title">Desastre fiscal: déficit 6,4% del PIB</div><div class="bal-body">Deuda pública: 63,7% del PIB (máximo 25 años, peor de América Latina). Inversión productiva: 16% del PIB (mínimo histórico). Segunda reforma tributaria hundida en 2025.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#e74c3c;">✗</div><div><div class="bal-title">Reforma a la salud: hundida 3 veces</div><div class="bal-body">Crisis de desabastecimiento de medicamentos. Gasto de bolsillo familias +11,3%. Implementación "de facto" por vía administrativa. Crisis de liquidez en EPS.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#e74c3c;">✗</div><div><div class="bal-title">Macrocaso UNGRD: $612 mil millones</div><div class="bal-body">Estructura criminal para sobornar congresistas y aprobar reformas. Exministros Bonilla (Hacienda) y Velasco (Interior) a la cárcel. Caso Nicolás Petro: lavado de activos en campaña.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#e74c3c;">✗</div><div><div class="bal-title">Colapso vivienda + gobernabilidad errática</div><div class="bal-body">Mi Casa Ya VIP cayó 81,1%. Pérdida 136.000 empleos en construcción. Altísima rotación de gabinete. "Gobierno desde X": despidos y órdenes militares por Twitter.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#e74c3c;">✗</div><div><div class="bal-title">Gran Acuerdo Nacional: promesa vacía</div><div class="bal-body">Coalición de gobierno se fragmentó desde 2023. Consulta Popular rechazada. Partidos aliados rompieron relaciones alegando falta de consenso real.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 CONGRESO -->
+<section class="section" id="congreso">
+  <div class="section-hdr"><span class="section-num">08</span><h2 class="section-title">Composición del Congreso 2026–2030</h2></div>
+
+  <div class="grid2" style="margin-bottom:12px;">
+    <div class="card">
+      <div class="card-title">Senado 2026–2030 — 108 curules · Fuente: Registraduría / El Tiempo</div>
+      <div class="congress-bar" id="senadoBar26"></div>
+      <div class="congress-legend" id="senadoLegend26" style="margin-top:8px;"></div>
+      <div class="chart-wrap" style="height:190px;margin-top:14px;"><canvas id="cSen26" role="img" aria-label="Curules Senado Colombia 2026-2030"></canvas></div>
+      <div class="note-box" style="margin-top:8px;font-size:11px;">Pacto Histórico creció de 20 a 25 (+5). CD creció de 13 a 17 (+4). Cambio Radical cayó de 11 a 6 (−5). Alianza Verde se reconfiguró como Alianza por Colombia (11 curules).</div>
+      <div style="margin-top:9px;"><a class="src-link" href="https://public.flourish.studio/visualisation/27885167/" target="_blank"><span class="src-icon">🏛️</span><div><div class="src-name">Parliament chart Senado</div><div class="src-sub">Flourish · N. Molina</div></div></a></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Cámara Nacional 2026–2030 — 188 curules · Fuente: Parlamento Andino / Registraduría</div>
+      <div class="congress-bar" id="camaraNacBar"></div>
+      <div class="congress-legend" id="camaraNacLegend" style="margin-top:8px;"></div>
+      <div class="chart-wrap" style="height:190px;margin-top:14px;"><canvas id="cCamNac" role="img" aria-label="Curules Cámara Nacional Colombia 2026-2030"></canvas></div>
+      <div class="note-box" style="margin-top:8px;font-size:11px;">Pacto Histórico lidera con 40 curules. CD y Liberal empatan en 28. CITREP (16) representa circunscripciones especiales. Fragmentación alta: 16 partidos con representación.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:0;">
+    <div class="card-title">Cámara por Antioquia 2022–2026 — 17 curules · Referencia comparativa</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <div class="congress-bar" id="camaraBar"></div>
+        <div class="congress-legend" id="camaraLegend" style="margin-top:7px;"></div>
+      </div>
+      <div class="chart-wrap" style="height:160px;"><canvas id="cCam" role="img" aria-label="Curules Cámara Antioquia 2022"></canvas></div>
+    </div>
+    <div style="margin-top:9px;"><a class="src-link" href="https://public.flourish.studio/visualisation/27932177/" target="_blank"><span class="src-icon">🏛️</span><div><div class="src-name">Parliament chart Cámara Antioquia</div><div class="src-sub">Flourish · N. Molina · datos 2022</div></div></a></div>
+  </div>
+</section>
+
+<!-- 09 RIESGO -->
+<section class="section" id="riesgo">
+  <div class="section-hdr"><span class="section-num">09</span><h2 class="section-title">Riesgo electoral Antioquia 2026 — MOE</h2></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Indicadores consolidados</div>
+      <div class="risk-row"><span>Municipios riesgo consolidado (fraude + violencia)</span><span class="bdg bdg-o">37</span></div>
+      <div class="risk-row"><span>Nivel extremo</span><span class="bdg bdg-r">18 municipios</span></div>
+      <div class="risk-row"><span>Riesgo fraude — Cámara</span><span class="bdg bdg-o">50 munic. · 40%</span></div>
+      <div class="risk-row"><span>Riesgo fraude — Senado</span><span class="bdg bdg-o">38 munic. · 30%</span></div>
+      <div class="risk-row"><span>Actor armado dominante</span><span style="font-size:11px;color:var(--text2);">EGC / AGC</span></div>
+      <div class="risk-row"><span>Participación Bajo Cauca (histórico)</span><span class="bdg bdg-r">&lt; 30%</span></div>
+      <div class="risk-row"><span>Consulta PH 2025 en Antioquia</span><span class="bdg bdg-r">3% apatía</span></div>
+      <div class="risk-row"><span>Dominio electoral atípico</span><span style="font-size:11px;color:var(--text2);">Caracolí (&gt;70% Cons.), Sabanalarga</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Factores por categoría</div>
+      <div class="bal-row"><div class="bal-icon" style="color:#e74c3c;">▲</div><div><div class="bal-title">Violencia armada</div><div class="bal-body">Bajo Cauca, Magdalena Medio, Nordeste, Norte antioqueño. EGC/AGC control consolidado. ELN y EMBF en disputa. Confinamiento ×6 vs. año anterior. Drones con explosivos y minas antipersonal.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#f39c12;">▲</div><div><div class="bal-title">Fraude e irregularidades</div><div class="bal-body">Anomalías participación: Ituango y Valdivia nunca superan 30%. Dominio atípico Caracolí. Votos nulos anómalos: El Bagre, Segovia, Betulia, Remedios, Nechí.</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#f39c12;">▲</div><div><div class="bal-title">Voto castigo y escándalos</div><div class="bal-body">Clanes Trujillo y Bedoya señalados por UNGRD. Clan Suárez Mira: 3 candidaturas cuestionadas. Vínculos a parapolítica en candidatos al Senado (Quintero Cardona, Uribe).</div></div></div>
+      <div class="bal-row"><div class="bal-icon" style="color:#f39c12;">▲</div><div><div class="bal-title">Economías ilegales</div><div class="bal-body">Minería ilegal de oro y cultivos ilícitos como base de financiación de grupos armados. Límites ambiguos generan "zonas grises" para trashumancia electoral (Remedios-Segovia, Fredonia-Venecia).</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FUENTES -->
+<section class="section">
+  <div class="section-hdr"><span class="section-num">10</span><h2 class="section-title">Fuentes y recursos</h2></div>
+  <div class="src-grid">
+    <a class="src-link" href="https://propuestaspresidenciales2026.vercel.app/" target="_blank"><span class="src-icon">📊</span><div><div class="src-name">Programas presidenciales</div><div class="src-sub">Molina-Arroyave · Vercel</div></div></a>
+    <a class="src-link" href="https://www.lasillavacia.com/silla-nacional/ponderador-de-encuestas-presidenciales-2026/" target="_blank"><span class="src-icon">📈</span><div><div class="src-name">Ponderador de encuestas</div><div class="src-sub">La Silla Vacía · may. 2026</div></div></a>
+    <a class="src-link" href="https://public.flourish.studio/visualisation/27885167/" target="_blank"><span class="src-icon">🏛️</span><div><div class="src-name">Senado histórico</div><div class="src-sub">Parliament chart · Flourish</div></div></a>
+    <a class="src-link" href="https://public.flourish.studio/visualisation/27932177/" target="_blank"><span class="src-icon">🏛️</span><div><div class="src-name">Cámara histórica</div><div class="src-sub">Parliament chart · Flourish</div></div></a>
+    <a class="src-link" href="https://notebooklm.google.com/notebook/6afce784-5506-4480-a02f-2686b8879d8a" target="_blank"><span class="src-icon">📓</span><div><div class="src-name">NotebookLM — Balance Petro</div><div class="src-sub">21 fuentes · may. 2026</div></div></a>
+    <a class="src-link" href="https://registraduria.gov.co" target="_blank"><span class="src-icon">🗳️</span><div><div class="src-name">Registraduría Nacional</div><div class="src-sub">Resultados en tiempo real</div></div></a>
+  </div>
+  <div style="margin-top:1.5rem;padding:11px 13px;background:var(--navy2);border:1px solid var(--border);border-radius:var(--r);font-size:11px;color:var(--text3);text-align:center;">
+    Panel: <strong style="color:var(--text2);">Nicolás Molina-Arroyave</strong> · Docente e investigador · CPOP EAFIT · 31 mayo 2026
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<script>
+/* ===== DATA ===== */
+const ELECTIONS={
+  '2006':{winner:'Álvaro Uribe Vélez',party:'Primero Colombia (reelección)',badge:'1v',participation:45.5,
+    description:'La reelección más contundente de la democracia colombiana post-91. Uribe conquistó el 62,4% en primera vuelta —único candidato en lograrlo bajo la Constitución de 1991— impulsado por su política de Seguridad Democrática y la percepción de éxito en la lucha contra la guerrilla. El Polo Democrático (Carlos Gaviria, 22%) por primera vez superó al Partido Liberal (Serpa, 11,8%), marcando el fin del bipartidismo histórico.',
+    stats:[['Participación','45,5%'],['Votos Uribe','7,4 M (62,4%)'],['Ventaja','40 puntos']],
+    results:[{pos:1,name:'Álvaro Uribe Vélez',party:'Primero Colombia',pct:62.4,color:'#3498db'},{pos:2,name:'Carlos Gaviria Díaz',party:'Polo Democrático Alt.',pct:22.0,color:'#e74c3c'},{pos:3,name:'Horacio Serpa Uribe',party:'Partido Liberal',pct:11.8,color:'#e67e22'}]},
+  '2010':{winner:'Juan Manuel Santos (1ª) → reelecto en 2ª',party:'Partido de la U',badge:'2v',participation:49.3,
+    description:'La ola verde de Antanas Mockus revolucionó el debate político: las encuestas pronosticaban empate técnico, pero Santos lo venció por 25 puntos en primera vuelta. El voto rural no reflejado en sondeos urbanos fue la clave de la sorpresa. En segunda vuelta Santos arrasó con el 69%. Fue la primera elección donde ninguno de los dos finalistas pertenecía a los partidos históricos (Liberal o Conservador).',
+    stats:[['Participación','49,3%'],['Santos 1ª vuelta','46,6%'],['Santos 2ª vuelta','69,1%']],
+    results:[{pos:1,name:'Juan Manuel Santos',party:'Partido de la U',pct:46.6,color:'#3498db'},{pos:2,name:'Antanas Mockus',party:'Partido Verde',pct:21.5,color:'#e74c3c'},{pos:3,name:'Germán Vargas Lleras',party:'Cambio Radical',pct:10.1,color:'#e67e22'},{pos:4,name:'Rafael Pardo',party:'Partido Liberal',pct:6.1,color:'#7f8c8d'}]},
+  '2014':{winner:'Óscar Iván Zuluaga (1ª) → Juan Manuel Santos (2ª)',party:'CD (1ª) · Unidad Nacional (2ª)',badge:'2v',participation:40.0,
+    description:'La elección con mayor abstención de las últimas dos décadas: 60%. El eje fue el proceso de paz con las FARC en La Habana. Zuluaga (uribismo) ganó la primera vuelta pero Santos se reeligió en segunda vuelta con 50,99%. Notable: ningún candidato superó el 30% en primera vuelta y el voto en blanco llegó al 6%. La polarización paz/seguridad partió el electorado en cuatro segmentos casi iguales.',
+    stats:[['Participación','40,0%'],['Abstención','60% (máx. 20 años)'],['Santos 2ª vuelta','50,99%']],
+    results:[{pos:1,name:'Óscar Iván Zuluaga',party:'Centro Democrático',pct:29.3,color:'#3498db'},{pos:2,name:'Juan Manuel Santos',party:'Unidad Nacional',pct:25.7,color:'#e74c3c'},{pos:3,name:'Marta Lucía Ramírez',party:'Partido Conservador',pct:15.5,color:'#e67e22'},{pos:4,name:'Clara López',party:'Polo Democrático',pct:15.2,color:'#7f8c8d'},{pos:5,name:'Enrique Peñalosa',party:'Alianza Verde',pct:8.3,color:'#95a5a6'}]},
+  '2018':{winner:'Iván Duque Márquez',party:'Centro Democrático',badge:'2v',participation:54.2,
+    description:'Petro llegó por primera vez a segunda vuelta, consolidando la izquierda como fuerza política mayor. Fajardo sorprendió con el 23,7% casi igualando a Petro, pero no clasificó. El debate central fue el tratamiento de los Acuerdos de Paz: Duque prometió "hacer pedagogía", no "hacer trizas" el acuerdo. En segunda vuelta Duque ganó con 54%. Participación récord en aquel momento: 54,2%.',
+    stats:[['Participación','54,2%'],['Duque 1ª vuelta','39,1%'],['Duque 2ª vuelta','54,0%']],
+    results:[{pos:1,name:'Iván Duque Márquez',party:'Centro Democrático',pct:39.1,color:'#3498db'},{pos:2,name:'Gustavo Petro',party:'Colombia Humana',pct:25.1,color:'#e74c3c'},{pos:3,name:'Sergio Fajardo',party:'Coalición C. Esperanza',pct:23.7,color:'#e67e22'},{pos:4,name:'Humberto de la Calle',party:'Partido Liberal',pct:2.1,color:'#7f8c8d'}]},
+  '2022':{winner:'Gustavo Petro Urrego',party:'Pacto Histórico',badge:'2v',participation:54.9,
+    description:'La elección más polarizada y con mayor participación desde 1991. Petro se convirtió en el primer presidente de izquierda. La gran sorpresa fue Rodolfo Hernández (28,2%) que superó a Federico Gutiérrez pese a cero estructura política. Fajardo se derrumbó al 4,2%. En segunda vuelta Petro ganó con 50,44% sobre Hernández (49,56%): diferencia de apenas 700.000 votos de 22,5 millones emitidos.',
+    stats:[['Participación','54,9%'],['Petro 1ª vuelta','40,3%'],['Petro 2ª vuelta','50,44%']],
+    results:[{pos:1,name:'Gustavo Petro',party:'Pacto Histórico',pct:40.3,color:'#3498db'},{pos:2,name:'Rodolfo Hernández',party:'Liga Gobernantes Anticorrupción',pct:28.2,color:'#e74c3c'},{pos:3,name:'Federico Gutiérrez',party:'Equipo por Colombia',pct:23.9,color:'#e67e22'},{pos:4,name:'Sergio Fajardo',party:'Coalición C. Esperanza',pct:4.2,color:'#7f8c8d'}]}
+};
+
+const SENADO_22=[{name:'Pacto H.',seats:20,color:'#e74c3c'},{name:'Conservador',seats:15,color:'#3498db'},{name:'Liberal',seats:14,color:'#e67e22'},{name:'Verde/CE',seats:14,color:'#27ae60'},{name:'CD',seats:13,color:'#8e44ad'},{name:'Cambio Rad.',seats:11,color:'#16a085'},{name:'La U',seats:10,color:'#d35400'},{name:'Otros',seats:11,color:'#7f8c8d'}];
+const SENADO_26=[{name:'Pacto H.',seats:25,color:'#8B1A1A'},{name:'CD',seats:17,color:'#4169c8'},{name:'Liberal',seats:13,color:'#cc2222'},{name:'A. por Col.',seats:11,color:'#27ae60'},{name:'Conservador',seats:11,color:'#1a4f9c'},{name:'La U',seats:9,color:'#d35400'},{name:'CR/ALMA',seats:6,color:'#16a085'},{name:'Ahora Col.',seats:5,color:'#8e44ad'},{name:'Otros',seats:11,color:'#7f8c8d'}];
+const CAMARA_NAC_26=[{name:'Pacto H.',seats:40,color:'#8B1A1A'},{name:'CD',seats:28,color:'#4169c8'},{name:'Liberal',seats:28,color:'#cc2222'},{name:'Conservador',seats:19,color:'#1a4f9c'},{name:'CITREP',seats:16,color:'#7f8c8d'},{name:'La U',seats:12,color:'#d35400'},{name:'Cambio Rad.',seats:10,color:'#16a085'},{name:'A. por Col.',seats:7,color:'#27ae60'},{name:'Nuevo Lib.',seats:3,color:'#f39c12'},{name:'Col. Ren.',seats:3,color:'#1abc9c'},{name:'Creemos',seats:2,color:'#9b59b6'},{name:'ASI',seats:2,color:'#3fc1c9'},{name:'P. Demócrata',seats:2,color:'#c0392b'},{name:'Otros',seats:3,color:'#95a5a6'}];
+const CAMARA_ANT=[{name:'CD',seats:5,color:'#8e44ad'},{name:'Conservador',seats:3,color:'#3498db'},{name:'Liberal',seats:3,color:'#e67e22'},{name:'Pacto H.',seats:2,color:'#e74c3c'},{name:'A. Verde',seats:2,color:'#27ae60'},{name:'Otros',seats:2,color:'#7f8c8d'}];
+
+/* ===== CONGRESS BARS ===== */
+function buildBar(data,barId,legId){
+  const total=data.reduce((a,b)=>a+b.seats,0);
+  const bar=document.getElementById(barId),leg=document.getElementById(legId);
+  data.forEach(p=>{
+    const s=document.createElement('div');s.className='congress-seg';
+    s.style.cssText=`width:${(p.seats/total*100).toFixed(1)}%;background:${p.color};`;
+    s.title=`${p.name}: ${p.seats}`;if(p.seats>=3)s.textContent=p.seats;bar.appendChild(s);
+    const li=document.createElement('div');li.className='leg-item';
+    li.innerHTML=`<span class="leg-dot" style="background:${p.color};"></span>${p.name} <strong style="color:var(--text);">${p.seats}</strong>`;leg.appendChild(li);
+  });
+}
+buildBar(SENADO_26,'senadoBar26','senadoLegend26');
+buildBar(CAMARA_NAC_26,'camaraNacBar','camaraNacLegend');
+buildBar(CAMARA_ANT,'camaraBar','camaraLegend');
+
+/* ===== ELECTION DETAIL ===== */
+function showElec(year){
+  document.querySelectorAll('#elecNav .fBtn').forEach(b=>b.classList.toggle('active',b.textContent===year));
+  const e=ELECTIONS[year];
+  const maxPct=Math.max(...e.results.map(r=>r.pct));
+  const rows=e.results.map(r=>`<tr>
+    <td style="font-size:16px;">${r.pos===1?'🥇':r.pos===2?'🥈':r.pos===3?'🥉':r.pos+'.'}</td>
+    <td style="font-weight:${r.pos===1?600:400};color:${r.pos===1?'var(--white)':'var(--text2)'};">${r.name}</td>
+    <td style="color:var(--text3);font-size:11px;">${r.party}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;color:${r.color};font-weight:600;">${r.pct.toFixed(1)}%</td>
+    <td style="width:110px;"><div class="bar-inline"><div class="bar-inner" style="width:${(r.pct/maxPct*100).toFixed(0)}%;background:${r.color};"></div></div></td>
+  </tr>`).join('');
+  const stats=e.stats.map(s=>`<div class="stat-pill"><strong>${s[0]}:</strong> ${s[1]}</div>`).join('');
+  const badge=e.badge==='1v'?'<span class="badge badge-1v">Sin 2ª vuelta</span>':'<span class="badge badge-2v">2ª vuelta requerida</span>';
+  document.getElementById('elec-detail-container').innerHTML=`<div class="card">
+    <div style="display:flex;gap:1.5rem;align-items:start;flex-wrap:wrap;margin-bottom:1rem;">
+      <div><div class="elec-year">${year}</div><div class="elec-winner">${e.winner} ${badge}</div><div class="elec-party">${e.party}</div></div>
+      <div class="elec-stats">${stats}</div>
+    </div>
+    <p class="elec-desc">${e.description}</p>
+    <table class="results-table"><thead><tr><th>#</th><th>Candidato</th><th>Partido / Coalición</th><th>%</th><th>Distribución</th></tr></thead><tbody>${rows}</tbody></table>
+  </div>`;
+}
+showElec('2006');
+
+/* ===== PROGRAMAS TABS ===== */
+const TABS={
+  seguridad:[
+    {ch:'Cepeda',bg:'rgba(52,152,219,.12)',tc:'#3498db',items:['Paz negociada como condición de seguridad real. Atender causas sociales de la violencia.','Desmantelamiento del paramilitarismo y garantías de no repetición.','Sistema Nacional contra la Macrocorrupción con instancia de juzgamiento especial.']},
+    {ch:'Fajardo',bg:'rgba(22,160,133,.12)',tc:'#1abc9c',items:['Plan Guardián: 40.000 policías nuevos. Ataque a rentas criminales.','Prevención del reclutamiento juvenil. "Entornos Protectores" para jóvenes.','Autoridad democrática con firmeza y dentro de la ley.']},
+    {ch:'Valencia',bg:'rgba(192,57,43,.12)',tc:'#e74c3c',items:['Plan 30-30: 30.000 militares + 30.000 policías. Defensa al 4% del PIB.','Ciberinteligencia, drones de última generación. Cooperación tipo Plan Colombia.','Sin negociación con grupos ilegales. Recuperación territorial por la fuerza.']},
+    {ch:'De la Espriella',bg:'rgba(230,126,34,.12)',tc:'#e67e22',items:['Cero negociación. Destruir 330.000 ha de coca: fumigación aérea + extradición.','Bloque de Búsqueda contra la Corrupción presidido por la Presidencia.','Paz Total: "traición a la Patria".']},
+    {ch:'C. López',bg:'rgba(142,68,173,.12)',tc:'#9b59b6',items:['Fiscalía Antimafia implacable. INPEC como gendarmería carcelaria.','Policías locales y sistemas de convivencia específicos para Medellín.','Descentralización de la seguridad hacia los territorios.']}
+  ],
+  economia:[
+    {ch:'Cepeda',bg:'rgba(52,152,219,.12)',tc:'#3498db',items:['Reforma tributaria progresiva. Control de rentas extractivas. Soberanía energética.','El Estado compra producción agropecuaria a precios justos.','Austeridad Republicana: salarios altos funcionarios reducidos.']},
+    {ch:'Fajardo',bg:'rgba(22,160,133,.12)',tc:'#1abc9c',items:['Consolidación fiscal. DIAN moderna. Crédito para 150.000 empresas.','Fondo Nacional de Innovación y Emprendimiento Verde.','Modernización caficultura. Bioeconomía y diversificación exportadora.']},
+    {ch:'Valencia',bg:'rgba(192,57,43,.12)',tc:'#e74c3c',items:['Meta 5% de crecimiento. Reducción impuesto renta empresarial.','Eliminación impuesto al patrimonio. $2.000 M anuales en IED.','Fracking, 1M barriles/día. Exploración nuclear, hidrógeno, biomasa.']},
+    {ch:'De la Espriella',bg:'rgba(230,126,34,.12)',tc:'#e67e22',items:['Meta 7% de crecimiento. Ajuste fiscal $70 billones. Estado reducido 25%.','Una entra y dos salen de regulaciones para actividad empresarial.','País de Propietarios: créditos vivienda al 2%.']},
+    {ch:'C. López',bg:'rgba(142,68,173,.12)',tc:'#9b59b6',items:['Microcréditos preferenciales para economía popular.','Autonomía fiscal para las regiones. DNP → Departamentos de Planeación Regional.','Presupuestos Participativos con voto ciudadano por tecnología.']}
+  ],
+  salud:[
+    {ch:'Cepeda',bg:'rgba(52,152,219,.12)',tc:'#3498db',items:['Salud como derecho fundamental. Sin modelo de negocio de la Ley 100.','Medicina preventiva, atención domiciliaria y salud mental como ejes.','SISPI: fortalecer sistema indígena, reconocer medicina tradicional.','Infraestructura en territorios excluidos: La Guajira, Tumaco.']},
+    {ch:'Fajardo',bg:'rgba(22,160,133,.12)',tc:'#1abc9c',items:['UPC con institucionalidad independiente. Acuerdo de Punto Final con hospitales.','Salud Digital: interoperabilidad historias clínicas.','Salud Mental: rutas ágiles, énfasis jóvenes, prevención suicidio.','SISPI: cobertura al 50% en 4 años.']},
+    {ch:'Valencia',bg:'rgba(192,57,43,.12)',tc:'#e74c3c',items:['PMU 24/7 en Presidencia. 10 M de atenciones en 100 días.','$9 billones: $6B deudas, $3B medicamentos. Hospitales Padrinos al campo.','Sistema mixto público-privado. Control precios de medicamentos.']},
+    {ch:'De la Espriella',bg:'rgba(230,126,34,.12)',tc:'#e67e22',items:['Plan choque $10 billones. Revisión trimestral UPC.','Topes a costos administrativos EPS. Tecnología para tiempos de atención.','Salud animal: veterinaria gratuita usando red hospitalaria.']},
+    {ch:'C. López',bg:'rgba(142,68,173,.12)',tc:'#9b59b6',items:['Sistema Nacional de Salud y Cuidado: integra lo médico con lo preventivo.','Estudio actuarial nuevo para actualizar plan de beneficios.','Sistema mixto con límites estrictos a integración vertical.','Sistema de información público centrado en el paciente.']}
+  ],
+  energia:[
+    {ch:'Cepeda',bg:'rgba(52,152,219,.12)',tc:'#3498db',items:['Soberanía energética. Crítica a la dependencia extractivista.','Transición justa con comunidades como protagonistas del proceso.','No fracking. Biodiversidad como activo estratégico.']},
+    {ch:'Fajardo',bg:'rgba(22,160,133,.12)',tc:'#1abc9c',items:['Meta 80% renovable. 1.000 MW nuevos/año.','Gas y petróleo como puente. Fracking solo bajo condiciones estrictas.','Fondo de Innovación y Emprendimiento Verde.']},
+    {ch:'Valencia',bg:'rgba(192,57,43,.12)',tc:'#e74c3c',items:['Fracking + 1 millón de barriles/día + carbón y gas.','Simultáneamente: renovables, hidroeléctricas, nuclear, hidrógeno, biomasa.','La tensión interna más aguda entre los cinco programas.']},
+    {ch:'De la Espriella',bg:'rgba(230,126,34,.12)',tc:'#e67e22',items:['Recuperar exploración petróleo y gas. Ecopetrol como activo estratégico.','Renovables y energía nuclear sin cerrar el grifo fósil.']},
+    {ch:'C. López',bg:'rgba(142,68,173,.12)',tc:'#9b59b6',items:['Puerto Antioquia (Urabá) en clúster de transición energética.','Énfasis en energías renovables. Comprometida con acuerdos climáticos.','Transición energética justa vinculada a territorios.']}
+  ],
+  paz:[
+    {ch:'Cepeda',bg:'rgba(52,152,219,.12)',tc:'#3498db',items:['Eje más desarrollado. Paz como condición de todo.','Justicia transicional, verdad, reparación integral y garantías de no repetición.','Implementar decisión Corte IDH sobre San José de Apartadó.']},
+    {ch:'Fajardo',bg:'rgba(22,160,133,.12)',tc:'#1abc9c',items:['Autoridad democrática con firmeza y dentro de la ley.','Planes integrales de seguridad y bienestar en territorios.','Prevención como política de paz de largo plazo.']},
+    {ch:'Valencia',bg:'rgba(192,57,43,.12)',tc:'#e74c3c',items:['Fuerza pública como herramienta principal. Recuperación territorial.','Erradicación de ilegales en parques nacionales. Sin negociación explícita.']},
+    {ch:'De la Espriella',bg:'rgba(230,126,34,.12)',tc:'#e67e22',items:['"La Paz Total de Petro es traición a la Patria."','Sin negociación con criminales. Recuperación territorial por la fuerza.','Extradición como herramienta central.']},
+    {ch:'C. López',bg:'rgba(142,68,173,.12)',tc:'#9b59b6',items:['Respaldo a los Acuerdos de Paz. Implementación como deuda con el territorio.','Justicia para víctimas como condición de paz duradera.','Fiscalía Antimafia como eje de seguridad.'"]}
+  ],
+  estado:[
+    {ch:'Cepeda',bg:'rgba(52,152,219,.12)',tc:'#3498db',items:['Revolución Política: "mandar obedeciendo". Poder constituyente.','Reforma Ley 80: comunidades y JAC contratan directamente con el Estado.','Austeridad Republicana: reducir salarios altos funcionarios.']},
+    {ch:'Fajardo',bg:'rgba(22,160,133,.12)',tc:'#1abc9c',items:['Jurisdicción Nacional Digital para procesos judiciales.','Registro Universal de Ingresos (RUI): DANE+SISBEN+DIAN+PILA.','Selección Fiscal y Procurador por mérito y convocatoria pública.']},
+    {ch:'Valencia',bg:'rgba(192,57,43,.12)',tc:'#e74c3c',items:['Estado AI First: IA para automatizar trámites. Reducción ministerios.','Congelar 30% de OPS. "Cédula del Hogar" para focalizar subsidios.','Comité de regla fiscal reforzado.']},
+    {ch:'De la Espriella',bg:'rgba(230,126,34,.12)',tc:'#e67e22',items:['Reducir Estado en 25%. Superávit primario. "Una entra y dos salen".','Comité regla fiscal para limitar exceso de gasto del ejecutivo.']},
+    {ch:'C. López',bg:'rgba(142,68,173,.12)',tc:'#9b59b6',items:['"En el territorio, no en el escritorio." DNP → DPR regionales.','Presupuestos Participativos con voto ciudadano por tecnología.','Conectividad: Toyo, Regiotram, Puerto Antioquia.']}
+  ],
+  inclusion:[
+    {ch:'Cepeda',bg:'rgba(52,152,219,.12)',tc:'#3498db',items:['Revolución antirracista y antipatriarcal. Inversión masiva en el Pacífico.','Agua potable y educación superior para comunidades afrodescendientes.','Renta básica universal para pobreza extrema. Campesinado como sujeto de derechos.']},
+    {ch:'Fajardo',bg:'rgba(22,160,133,.12)',tc:'#1abc9c',items:['50% de empresas apoyadas lideradas por mujeres.','Ruta nacional de salud mental escolar. Economía Plateada para adultos mayores.','SISPI al 50% de cobertura en 4 años.']},
+    {ch:'Valencia',bg:'rgba(192,57,43,.12)',tc:'#e74c3c',items:['Ruta 3E: Estudiar, Emplearse o Emprender. Ningún joven inactivo.','ICETEX: pago según empleo y salario. Licencia paternidad ≥4 semanas.','Capital semilla $500.000 por niño nacido en pobreza.']},
+    {ch:'De la Espriella',bg:'rgba(230,126,34,.12)',tc:'#e67e22',items:['Escuela de Emprendedores Rurales para 100.000 jóvenes del campo.','Bono "Pase mi cultura" para 2,4 millones de jóvenes.','Créditos universitarios para mejores talentos.']},
+    {ch:'C. López',bg:'rgba(142,68,173,.12)',tc:'#9b59b6',items:['Sistema Nacional de Cuidado: liberar a mujeres del trabajo no remunerado.','1 millón de becas para jóvenes, mujeres y mayores de 50.','Igualdad y no discriminación como regla absoluta de gobierno.']}
+  ]
+};
+
+function showTab(k){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick').includes("'"+k+"'")));
+  const cells=TABS[k].map(c=>`<div class="prog-cell" style="background:${c.bg};">
+    <div class="prog-cell-hdr" style="color:${c.tc};">${c.ch}</div>
+    <ul>${c.items.map(i=>`<li style="color:var(--text2);">${i}</li>`).join('')}</ul>
+  </div>`).join('');
+  document.getElementById('tabContent').innerHTML=`<div class="prog-grid">${cells}</div>`;
+}
+showTab('seguridad');
+
+/* ===== CANDIDATE FILTER ===== */
+function filterCand(cat){
+  document.querySelectorAll('.fBtn').forEach(b=>{
+    const onclick=b.getAttribute('onclick')||'';
+    if(onclick.includes('filterCand'))b.classList.toggle('active',onclick.includes("'"+cat+"'"));
+  });
+  document.querySelectorAll('.cand-card').forEach(card=>{
+    if(cat==='todos'){
+      card.querySelectorAll('.prop-item,.prop-section-title').forEach(el=>el.style.display='');
+    } else {
+      card.querySelectorAll('.prop-item').forEach(el=>{
+        const show=el.dataset.cat===cat||!el.dataset.cat;
+        el.style.display=show?'':'none';
+      });
+      card.querySelectorAll('.prop-section-title').forEach(el=>{
+        el.style.display=el.dataset.cat===cat?'':'none';
+      });
+    }
+  });
+}
+
+/* ===== CHARTS ===== */
+Chart.defaults.color='#7f8c8d';
+Chart.defaults.font.family="'IBM Plex Sans',sans-serif";
+Chart.defaults.font.size=11;
+
+new Chart(document.getElementById('cEnc'),{type:'bar',data:{
+  labels:['Invamer','CNC/CAMBIO','Guarumo','Génesis Crea'],
+  datasets:[
+    {label:'Cepeda',data:[44.6,33.4,37.1,35.1],backgroundColor:'#3498db',borderRadius:3,borderSkipped:false},
+    {label:'De la Espriella',data:[31.6,30.9,27.5,21.6],backgroundColor:'#e67e22',borderRadius:3,borderSkipped:false},
+    {label:'Valencia',data:[14.0,null,21.7,25.4],backgroundColor:'#c0392b',borderRadius:3,borderSkipped:false},
+    {label:'Fajardo',data:[null,null,null,2.4],backgroundColor:'#16a085',borderRadius:3,borderSkipped:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{min:0,max:55,ticks:{callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.04)'}}}}
+});
+
+new Chart(document.getElementById('cSV'),{type:'bar',data:{
+  labels:['Esc. A: Cepeda\nvs. Abelardo','Esc. B: Cepeda\nvs. Valencia'],
+  datasets:[
+    {label:'Cepeda',data:[45,45.6],backgroundColor:'#3498db',borderRadius:3,borderSkipped:false},
+    {label:'Oponente',data:[42,48.3],backgroundColor:['#e67e22','#c0392b'],borderRadius:3,borderSkipped:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{min:38,max:52,ticks:{callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.04)'}}}}
+});
+
+new Chart(document.getElementById('cTend'),{type:'line',data:{
+  labels:['Ene','Feb','Mar','Abr','May'],
+  datasets:[
+    {label:'Cepeda',data:[38,39,40,41,44.6],borderColor:'#3498db',backgroundColor:'rgba(52,152,219,.08)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#3498db'},
+    {label:'De la Espriella',data:[22,24,27,28,31.6],borderColor:'#e67e22',backgroundColor:'rgba(230,126,34,.06)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#e67e22'},
+    {label:'Valencia',data:[20,22,24,22,21.7],borderColor:'#c0392b',backgroundColor:'rgba(192,57,43,.06)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#c0392b'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{min:10,max:55,ticks:{callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.04)'}}}}
+});
+
+const HIST_NAMES=[['Uribe 62,4%','Gaviria 22,0%','Serpa 11,8%','—'],['Santos 46,6%','Mockus 21,5%','Vargas 10,1%','Pardo 6,1%'],['Zuluaga 29,3%','Santos 25,7%','Ramírez 15,5%','López 15,2%'],['Duque 39,1%','Petro 25,1%','Fajardo 23,7%','—'],['Petro 40,3%','Hernández 28,2%','Fico 23,9%','Fajardo 4,2%']];
+new Chart(document.getElementById('cHist'),{type:'bar',data:{
+  labels:['2006\nUribe','2010\nSantos','2014\nZuluaga','2018\nDuque','2022\nPetro'],
+  datasets:[
+    {label:'1.°',data:[62.4,46.6,29.3,39.1,40.3],backgroundColor:'#3498db',borderRadius:3,borderSkipped:false},
+    {label:'2.°',data:[22.0,21.5,25.7,25.1,28.2],backgroundColor:'#e74c3c',borderRadius:3,borderSkipped:false},
+    {label:'3.°',data:[11.8,10.1,15.5,23.7,23.9],backgroundColor:'#e67e22',borderRadius:3,borderSkipped:false},
+    {label:'4.°',data:[0,6.1,15.2,0,4.2],backgroundColor:'#7f8c8d',borderRadius:3,borderSkipped:false},
+    {type:'line',label:'50%',data:[50,50,50,50,50],borderColor:'#c9973a',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false,yAxisID:'y'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>['2006','2010','2014','2018','2022'][c[0].dataIndex],label:c=>HIST_NAMES[c.dataIndex][c.datasetIndex]||''}}},scales:{y:{min:0,max:75,ticks:{callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.04)'}},x:{grid:{display:false}}}}
+});
+
+new Chart(document.getElementById('cGan'),{type:'bar',data:{
+  labels:['Uribe\n2006','Santos\n2010','Zuluaga\n2014','Duque\n2018','Petro\n2022'],
+  datasets:[
+    {data:[62.4,46.6,29.3,39.1,40.3],backgroundColor:['#3498db','#3498db','#3498db','#3498db','#e67e22'],borderRadius:3,borderSkipped:false},
+    {type:'line',data:[50,50,50,50,50],borderColor:'#c9973a',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:75,ticks:{callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.04)'}},x:{grid:{display:false}}}}
+});
+
+new Chart(document.getElementById('cPart'),{type:'line',data:{
+  labels:['2006','2010','2014','2018','2022'],
+  datasets:[{data:[45.5,49.3,40.0,54.2,54.9],borderColor:'#16a085',backgroundColor:'rgba(22,160,133,.1)',fill:true,tension:.3,pointRadius:4,pointBackgroundColor:'#16a085',borderWidth:2}]
+},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:35,max:60,ticks:{callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.04)'}},x:{grid:{display:false}}}}
+});
+
+new Chart(document.getElementById('cSen26'),{type:'bar',data:{labels:SENADO_26.map(p=>p.name),datasets:[{data:SENADO_26.map(p=>p.seats),backgroundColor:SENADO_26.map(p=>p.color),borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+' curules'}}},scales:{y:{min:0,max:30,ticks:{stepSize:5},grid:{color:'rgba(255,255,255,0.04)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}});
+new Chart(document.getElementById('cCamNac'),{type:'bar',data:{labels:CAMARA_NAC_26.map(p=>p.name),datasets:[{data:CAMARA_NAC_26.map(p=>p.seats),backgroundColor:CAMARA_NAC_26.map(p=>p.color),borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+' curules'}}},scales:{y:{min:0,max:45,ticks:{stepSize:10},grid:{color:'rgba(255,255,255,0.04)'}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+new Chart(document.getElementById('cCam'),{type:'bar',data:{labels:CAMARA_ANT.map(p=>p.name),datasets:[{data:CAMARA_ANT.map(p=>p.seats),backgroundColor:CAMARA_ANT.map(p=>p.color),borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:7,ticks:{stepSize:1},grid:{color:'rgba(255,255,255,0.04)'}},x:{grid:{display:false}}}}});
+
+/* ===== ACTIVE NAV ===== */
+const secIds=['hoy','encuestas','candidatos','programas','antioquia','historico','balance','congreso','riesgo'];
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)document.querySelectorAll('.nav-link').forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id));});},{rootMargin:'-35% 0px -60% 0px'});
+secIds.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+</script>
+</body>
+</html>
