@@ -177,14 +177,13 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--navy);color:var(--t
     <button class="topicBtn active" onclick="showTopic('encuestas')"><span class="ticon">📈</span>Encuestas 2ª vuelta</button>
     <button class="topicBtn" onclick="showTopic('transferencia')"><span class="ticon">↗️</span>Transferencia de votos</button>
     <button class="topicBtn" onclick="showTopic('analistas')"><span class="ticon">🎙️</span>Análisis de expertos</button>
-    <button class="topicBtn" onclick="showTopic('videos')"><span class="ticon">📺</span>Análisis en video (CNN, Semana, Caracol, La Silla)</button>
+    <button class="topicBtn" onclick="showTopic('videos')"><span class="ticon">📺</span>Análisis en video </button>
     <button class="topicBtn" onclick="showTopic('geopolitica')"><span class="ticon">🌎</span>Lectura geopolítica</button>
     <button class="topicBtn" onclick="showTopic('herencia')"><span class="ticon">📋</span>Lo que hereda el próximo gobierno</button>
     <button class="topicBtn" onclick="showTopic('mapa')"><span class="ticon">🗺️</span>Mapa por regiones</button>
     <button class="topicBtn" onclick="showTopic('candidatos')"><span class="ticon">👤</span>Los dos finalistas</button>
     <button class="topicBtn" onclick="showTopic('programas')"><span class="ticon">📋</span>Programas ampliados</button>
     <button class="topicBtn" onclick="showTopic('consultas')"><span class="ticon">🗳️</span>Consultas internas</button>
-    <button class="topicBtn" onclick="showTopic('debates')"><span class="ticon">🎤</span>Debates</button>
     <button class="topicBtn" onclick="showTopic('historica')"><span class="ticon">📜</span>Serie histórica 2006-2022</button>
     <button class="topicBtn" onclick="showTopic('fraude')"><span class="ticon">⚠️</span>Polémica del preconteo</button>
     <button class="topicBtn" onclick="showTopic('fuentes')"><span class="ticon">🔗</span>Fuentes</button>
@@ -289,9 +288,9 @@ TOPICS.transferencia = `
   <div class="flow-row">
     <div class="flow-from"><strong>Santiago Botero</strong>206.140 votos (0,87%)</div>
     <div class="flow-arrow">
-      <div class="flow-bar"><div class="flow-seg" style="width:100%;background:#3498db;"></div></div>
+      <div class="flow-bar"><div class="flow-seg" style="width:100%;background:#7f8c8d;"></div></div>
     </div>
-    <div class="flow-pct" style="color:#3498db;">→ Cepeda (anuncio oficial)</div>
+    <div class="flow-pct" style="color:#7f8c8d;">→ Espriella </div>
   </div>
   <div class="flow-row">
     <div class="flow-from"><strong>Sergio Fajardo</strong>1.009.073 votos (4,26%)</div>
@@ -868,55 +867,6 @@ TOPICS.consultas = `
     <div class="note-box" style="font-size:11px;">Total: 618.705 votos — la consulta de centro con menor participación de las cuatro, anticipando ya el techo bajo que tendría López en la elección general (apenas 225.517 votos, el 36% de lo obtenido en esta consulta).</div>
   </div>
 </div>`;
-
-TOPICS.debates = `
-<div class="card">
-  <div class="card-title">Debates presidenciales — 9 emisiones, abril-mayo 2026</div>
-  <table style="width:100%;border-collapse:collapse;font-size:11px;">
-    <thead><tr style="border-bottom:1px solid var(--border2);">
-      <th style="text-align:left;padding:6px 4px;font-size:9.5px;color:var(--text3);text-transform:uppercase;">Medio / Fecha</th>
-      <th style="text-align:left;padding:6px 4px;font-size:9.5px;color:var(--text3);text-transform:uppercase;">Lugar</th>
-      <th style="text-align:center;padding:6px 4px;font-size:9.5px;color:var(--text3);">Cepeda</th>
-      <th style="text-align:center;padding:6px 4px;font-size:9.5px;color:var(--text3);">Espriella</th>
-      <th style="text-align:center;padding:6px 4px;font-size:9.5px;color:var(--text3);">Valencia</th>
-      <th style="text-align:center;padding:6px 4px;font-size:9.5px;color:var(--text3);">Fajardo</th>
-    </tr></thead>
-    <tbody id="debTbody"></tbody>
-  </table>
-  <div class="note-box" style="font-size:11px;">Patrón notable: <strong style="color:var(--white);">Espriella solo asistió a 2 de los 9 debates</strong> (RCN 29 abr y El Tiempo/RCN/La FM 13 may), evitando sistemáticamente la confrontación directa — estrategia coherente con su perfil de outsider que evita el desgaste del debate tradicional. Cepeda asistió a 7 de 9. Valencia y Fajardo fueron los más constantes (8 de 9 cada uno).</div>
-</div>
-<div class="card">
-  <div class="card-title">Debates vicepresidenciales — 7 emisiones, abril-mayo 2026</div>
-  <p style="font-size:11.5px;color:var(--text2);line-height:1.7;">Las fórmulas vicepresidenciales tuvieron una agenda paralela de 7 debates (Cartagena, Bogotá, Barranquilla, Buenaventura). El 22 de mayo, el último debate de fórmulas <strong style="color:var(--white);">"habló de corrupción, politiquería y posibilidad de alianzas"</strong> (Noticias Caracol) — una antesala directa de los acuerdos de segunda vuelta que se concretarían días después.</p>
-  <div class="quote-card">
-    <div class="qsource">El Tiempo</div>
-    <div class="qtext">"Choque entre José Manuel Restrepo y Aida Quilcué por ausencia en debate vicepresidencial" — la única emisión de segunda vuelta (Portafolio/Canal 1, 10 jun) registró la ausencia de Restrepo, generando polémica en redes entre las dos fórmulas finalistas.</div>
-  </div>
-</div>`;
-
-function buildDebateTable(){
-  const el = document.getElementById('debTbody'); if(!el) return;
-  const rows = [
-    ['Noticias Caracol · 16 abr','Cartagena','Sí','No','Sí','Sí'],
-    ['RCN Noticias · 29 abr','Bogotá','Sí','Sí','Sí','Sí'],
-    ['El Espectador · 29 abr','Bogotá','Sí','No','No','No'],
-    ['El Colombiano/Teleantioquia · 7 may','Medellín','Sí','No','Sí','Sí'],
-    ['Noticias Caracol · 10 may','Bogotá','Sí','No','Sí','Sí'],
-    ['El Tiempo/RCN/La FM · 13 may','Bogotá','Sí','Sí','Sí','Sí'],
-    ['RTVC · 13 may','Bogotá','No','No','No','No'],
-    ['El Colombiano · 19 may','Medellín','No','No','No','No'],
-    ['Noticias Caracol · 19 may','Bogotá','Sí','No','Sí','Sí'],
-  ];
-  el.innerHTML = rows.map(r=>`<tr style="border-bottom:1px solid var(--border);">
-    <td style="padding:6px 4px;color:var(--text2);">${r[0]}</td>
-    <td style="padding:6px 4px;color:var(--text3);">${r[1]}</td>
-    <td style="padding:6px 4px;text-align:center;color:${r[2]==='Sí'?'#3498db':'#7f8c8d'};">${r[2]}</td>
-    <td style="padding:6px 4px;text-align:center;color:${r[3]==='Sí'?'#e67e22':'#7f8c8d'};">${r[3]}</td>
-    <td style="padding:6px 4px;text-align:center;color:${r[4]==='Sí'?'#c0392b':'#7f8c8d'};">${r[4]}</td>
-    <td style="padding:6px 4px;text-align:center;color:${r[5]==='Sí'?'#16a085':'#7f8c8d'};">${r[5]}</td>
-  </tr>`).join('');
-}
-
 
 TOPICS.mapa = `<div id="mapaRegionesContainer"></div>`;
 
